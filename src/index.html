@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Companion App</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0c0c0e;
+    --surface: #131316;
+    --border: #1e1e24;
+    --accent: #a8ff78;
+    --red: #ff5f5f;
+    --text: #e8e8f0;
+    --muted: #4a4a5a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── Big button ── */
+  .track-btn {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    -webkit-app-region: no-drag;
+    position: relative;
+    outline: none;
+  }
+
+  .track-btn::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .track-btn:hover::before {
+    border-color: var(--border);
+    inset: -12px;
+  }
+
+  .track-btn.idle:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 40px rgba(168, 255, 120, 0.12);
+  }
+
+  .track-btn.tracking {
+    border-color: var(--red);
+    box-shadow: 0 0 40px rgba(255, 95, 95, 0.15);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(255, 95, 95, 0.15); }
+    50%       { box-shadow: 0 0 60px rgba(255, 95, 95, 0.3); }
+  }
+
+  .btn-icon {
+    font-size: 2rem;
+    transition: transform 0.2s;
+  }
+  .track-btn:hover .btn-icon { transform: scale(1.1); }
+
+  .btn-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .track-btn.idle:hover .btn-label  { color: var(--accent); }
+  .track-btn.tracking .btn-label    { color: var(--red); }
+
+  /* ── Status ── */
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.3s;
+  }
+  .status-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: blink 1.5s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  /* ── Timer ── */
+  .timer {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .timer.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="logo">Scholar Vision</div>
+
+<div class="timer" id="timer">00:00:00</div>
+
+<button class="track-btn idle" id="track-btn" onclick="toggleTracking()">
+  <span class="btn-icon" id="btn-icon">▶</span>
+  <span class="btn-label" id="btn-label">Start</span>
+</button>
+
+<div class="status">
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">Ready</span>
+</div>
+
+<script>
+  let tracking = false;
+  let startTime = null;
+  let timerInterval = null;
+
+  const btn       = document.getElementById('track-btn');
+  const btnIcon   = document.getElementById('btn-icon');
+  const btnLabel  = document.getElementById('btn-label');
+  const statusDot = document.getElementById('status-dot');
+  const statusTxt = document.getElementById('status-text');
+  const timer     = document.getElementById('timer');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateTimer() {
+    const diff = Math.floor((Date.now() - startTime) / 1000);
+    const h = Math.floor(diff / 3600);
+    const m = Math.floor((diff % 3600) / 60);
+    const s = diff % 60;
+    timer.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+  }
+
+  function toggleTracking() {
+    tracking = !tracking;
+
+    if (tracking) {
+      // ── Start tracking ──
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+
+      btn.classList.replace('idle', 'tracking');
+      btnIcon.textContent = '■';
+      btnLabel.textContent = 'Stop';
+      statusDot.classList.add('active');
+      statusTxt.textContent = 'Tracking...';
+      timer.classList.add('visible');
+
+      if (window.electronAPI) window.electronAPI.startTracking();
+
+    } else {
+      // ── Stop tracking ──
+      clearInterval(timerInterval);
+
+      btn.classList.replace('tracking', 'idle');
+      btnIcon.textContent = '▶';
+      btnLabel.textContent = 'Start';
+      statusDot.classList.remove('active');
+      statusTxt.textContent = 'Sending data...';
+      timer.classList.remove('visible');
+
+      if (window.electronAPI) {
+        window.electronAPI.stopTracking();
+      }
+
+      // Show report after short delay
+      setTimeout(() => {
+        statusTxt.textContent = 'Ready';
+        if (window.electronAPI) window.electronAPI.showReport();
+      }, 1500);
+    }
+  }
+</script>
+</body>
+</html>
