@@ -57,4 +57,18 @@ function buildMenu() {
     },
   ]);
 }
+// ─── Initialize the tray ─────────────────────────────────────────────────
+function initTray() {
+  tray = new Tray(createIcon(true));
+  tray.setToolTip('Companion App — Tracking');
+  tray.setContextMenu(buildMenu());
 
+  // Left click also opens the menu
+  tray.on('click', () => {
+    tray.popUpContextMenu();
+  });
+
+  console.log('[tray] System tray initialized.');
+}
+
+module.exports = { initTray };
