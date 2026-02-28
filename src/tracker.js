@@ -8,6 +8,7 @@ const path      = require('path');
 
 // ─── Shared buffer — sender.js reads and drains this ─────────────────────
 const eventBuffer = [];
+const allEvents = []; 
 let watcherProcess = null;
 // ─── Start & stop ─────────────────────────────────────────────────────────
 function start() {
@@ -29,6 +30,7 @@ function start() {
           if (ignored.some(i => event.app.toLowerCase().includes(i))) continue;
           event.category = getCategory(event.app, event.windowTitle);
           eventBuffer.push(event);
+          allEvents.push(event);
         }
         function getCategory(app, windowTitle) {
           const unproductiveApps = [
@@ -82,4 +84,4 @@ function stop() {
 
 // ─── Hook into Electron app lifecycle ────────────────────────────────────
 
-module.exports = { eventBuffer, start, stop };
+module.exports = { eventBuffer,allEvents, start, stop };

@@ -3,9 +3,9 @@
 // Wires together tracker.js, sender.js, tray.js, handler.js, index.html and report.html
 
 require('dotenv').config();
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
-const { start, stop, eventBuffer } = require('./tracker');
+const { start, stop, eventBuffer,allEvents } = require('./tracker');
 const { flush }                     = require('./sender');
 const { initTray }                  = require('./tray');
 
@@ -76,6 +76,7 @@ ipcMain.on('start-tracking', () => {
 ipcMain.on('stop-tracking', () => {
   console.log('[main] Stop tracking.');
   stop();
+  sessionSnapshot = [...eventBuffer];
  
 });
 
