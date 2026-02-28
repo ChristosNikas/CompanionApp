@@ -8,7 +8,7 @@ const path      = require('path');
 
 // ─── Shared buffer — sender.js reads and drains this ─────────────────────
 const eventBuffer = [];
-let watherProcess = null;
+let watcherProcess = null;
 // ─── Start & stop ─────────────────────────────────────────────────────────
 function start() {
   const scriptPath = path.join(__dirname, 'watcher.py');
@@ -54,7 +54,5 @@ function stop() {
 }
 
 // ─── Hook into Electron app lifecycle ────────────────────────────────────
-app.whenReady().then(start);
-app.on('before-quit', stop);
 
 module.exports = { eventBuffer, start, stop };
