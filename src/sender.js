@@ -3,7 +3,7 @@
 // Handles offline buffering, retries, and auth.
 
 require('dotenv').config();
-const Store = require('electron-store'); // npm i electron-store
+const Store = require('electron-store').default;
 const { eventBuffer } = require('./tracker');
 
 const store = new Store();
