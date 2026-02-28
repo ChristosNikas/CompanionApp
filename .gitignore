@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment variables (never push this!)
+.env
+
+# Electron build output
+out/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+#env files
+*.env
