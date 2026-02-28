@@ -60,6 +60,7 @@ function createReportWindow() {
 
   reportWindow.on('closed', () => {
     reportWindow = null;
+    app.quit(); // close the whole app when report is closed    !!!!!!!!!!!!!!!!!!!(after done remove this)
   });
 }
 
@@ -70,31 +71,35 @@ ipcMain.on('start-tracking', () => {
   console.log('[main] Start tracking.');
   start();
 });
-
+ sessionSnapshot = [...eventBuffer];
 // User clicked STOP in index.html
 ipcMain.on('stop-tracking', () => {
   console.log('[main] Stop tracking.');
   stop();
+ 
 });
 
-// Open the report window
-ipcMain.on('show-report', () => {
-  console.log('[main] Opening report window.');
-  if (!reportWindow) createReportWindow();
-  else reportWindow.focus();
-});
 
-// report.html asks for the events to display
+/*
 ipcMain.handle('get-events', () => {
-  return [...eventBuffer];
+  let sessionSnapshot = [...eventBuffer];
+  return sessionSnapshot;
+  
 });
-
+*/
 // report.html triggers a flush to the web app
+const fs = require('fs');
+
 ipcMain.handle('flush-events', async () => {
+  // Save to file for testing
+  fs.writeFileSync(
+    path.join(__dirname, '../session.json'),
+    JSON.stringify(sessionSnapshot, null, 2)
+  );
   await flush();
+  app.quit();
   return true;
 });
-
 // ─── App ready ───────────────────────────────────────────────────────────
 app.whenReady().then(() => {
   console.log('[main] Companion App started.');

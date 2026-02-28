@@ -53,6 +53,7 @@ function buildMenu() {
       label: 'Quit',
       click: () => {
         app.quit();
+
       },
     },
   ]);

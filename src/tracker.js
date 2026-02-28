@@ -25,8 +25,35 @@ function start() {
           console.warn('[tracker] watcher error:', event.error);
         } else {
           console.log('[tracker] captured:', event.app, `(${event.durationSecs}s)`);
+          const ignored = ['gnome-shell', 'gjs'];
+          if (ignored.some(i => event.app.toLowerCase().includes(i))) continue;
+          event.category = getCategory(event.app, event.windowTitle);
           eventBuffer.push(event);
         }
+        function getCategory(app, windowTitle) {
+          const unproductiveApps = [
+            'discord', 'spotify', 'steam',
+          ];
+
+          const unproductiveTitles = [
+            'youtube', 'netflix', 'reddit',
+            'twitter', 'instagram', 'tiktok',
+            'facebook', 'twitch', 'x.com',
+          ];
+
+          // Check app name
+          if (unproductiveApps.some(u => app.toLowerCase().includes(u))) {
+            return 'unproductive';
+          }
+
+          // Check window title (catches browser tabs)
+          if (windowTitle && unproductiveTitles.some(u => windowTitle.toLowerCase().includes(u))) {
+            return 'unproductive';
+          }
+
+          return 'productive';
+        }
+        
       } catch (e) {
         console.warn('[tracker] bad JSON from watcher:', line);
       }

@@ -213,12 +213,17 @@
 
       if (window.electronAPI) {
         window.electronAPI.stopTracking();
-      }
+        setTimeout(() => {
+            statusTxt.textContent = 'Sending data...';
+            window.electronAPI.flush().then(() => {
+            statusTxt.textContent = 'Done!';
+            });
+        }, 1500);
+        }
 
       // Show report after short delay
       setTimeout(() => {
         statusTxt.textContent = 'Ready';
-        if (window.electronAPI) window.electronAPI.showReport();
       }, 1500);
     }
   }
