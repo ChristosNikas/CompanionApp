@@ -36,9 +36,9 @@ touch .env
 Add this to your `.env`:
 ```
 API_URL=https://your-webapp.com/api/events
-USER_TOKEN=your_secret_token
-USER_ID=your_user_id
-DEVICE_ID=your-device-name
+USER_TOKEN=your_secret_token(exaple:test123)
+USER_ID=your_user_id(example:testuser)
+DEVICE_ID=your-device-name(example:testdevice)
 ```
 
 ---
