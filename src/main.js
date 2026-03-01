@@ -71,12 +71,12 @@ ipcMain.on('start-tracking', () => {
   console.log('[main] Start tracking.');
   start();
 });
- sessionSnapshot = [...eventBuffer];
+let sessionSnapshot = [];
 // User clicked STOP in index.html
 ipcMain.on('stop-tracking', () => {
   console.log('[main] Stop tracking.');
   stop();
-  sessionSnapshot = [...eventBuffer];
+  sessionSnapshot = [...allEvents];
  
 });
 
