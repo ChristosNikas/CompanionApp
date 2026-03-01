@@ -6,9 +6,48 @@ const { spawn } = require('child_process');
 const path      = require('path');
 
 const eventBuffer = [];
-const allEvents = []; 
+const allEvents = [];
 let watcherProcess = null;
-//Start & stop 
+
+// ─── Category classification ──────────────────────────────────────────────
+const PRODUCTIVE_APPS = [
+  'code', 'vscode', 'notion', 'anki', 'zotero',
+  'winword', 'soffice', 'libreoffice', 'excel', 'gnumeric',
+];
+const NEUTRAL_APPS = [
+  'spotify', 'slack', 'thunderbird', 'outlook', 'mail', 'teams',
+];
+const DISTRACTING_APPS = [
+  'discord', 'steam',
+];
+const PRODUCTIVE_TITLES = [
+  'github', 'stackoverflow', 'docs.', 'mdn', 'wikipedia',
+  'arxiv', 'scholar', 'overleaf',
+];
+const NEUTRAL_TITLES = [
+  'gmail', 'outlook', 'email',
+];
+const DISTRACTING_TITLES = [
+  'youtube', 'netflix', 'reddit', 'twitter', 'instagram',
+  'tiktok', 'facebook', 'twitch', 'x.com', 'gaming',
+];
+
+function getCategory(appName, windowTitle) {
+  const lApp   = appName.toLowerCase();
+  const lTitle = (windowTitle || '').toLowerCase();
+
+  if (PRODUCTIVE_APPS.some(u => lApp.includes(u)))   return 'productive';
+  if (NEUTRAL_APPS.some(u => lApp.includes(u)))       return 'neutral';
+  if (DISTRACTING_APPS.some(u => lApp.includes(u)))   return 'distracting';
+
+  if (DISTRACTING_TITLES.some(u => lTitle.includes(u))) return 'distracting';
+  if (NEUTRAL_TITLES.some(u => lTitle.includes(u)))     return 'neutral';
+  if (PRODUCTIVE_TITLES.some(u => lTitle.includes(u)))  return 'productive';
+
+  return 'productive';
+}
+
+//Start & stop
 function start() {
   const scriptPath = path.join(__dirname, 'watcher.py');
   watcherProcess = spawn('python3', [scriptPath], {
@@ -30,30 +69,6 @@ function start() {
           eventBuffer.push(event);
           allEvents.push(event);
         }
-        function getCategory(app, windowTitle) {
-          const unproductiveApps = [
-            'discord', 'spotify', 'steam',
-          ];
-
-          const unproductiveTitles = [
-            'youtube', 'netflix', 'reddit',
-            'twitter', 'instagram', 'tiktok',
-            'facebook', 'twitch', 'x.com',
-          ];
-
-          // Check app name
-          if (unproductiveApps.some(u => app.toLowerCase().includes(u))) {
-            return 'unproductive';
-          }
-
-          // Check window title (catches browser tabs)
-          if (windowTitle && unproductiveTitles.some(u => windowTitle.toLowerCase().includes(u))) {
-            return 'unproductive';
-          }
-
-          return 'productive';
-        }
-        
       } catch (e) {
         console.warn('[tracker] bad JSON from watcher:', line);
       }
