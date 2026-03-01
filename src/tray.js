@@ -1,5 +1,3 @@
-// tray.js
-// Creates a system tray icon with a menu to control the tracker.
 // Shows tracking status, allows pause/resume, and quit.
 
 const { Tray, Menu, nativeImage, app } = require('electron');
@@ -9,8 +7,7 @@ const { start, stop } = require('./tracker');
 let tray = null;
 let isTracking = true;
 
-// ─── Create a simple colored icon ────────────────────────────────────────
-// Green = tracking, Red = paused
+// Create a simple colored icon 
 function createIcon(tracking) {
   const color = tracking ? '#4fffb0' : '#ff6b6b';
   const svg = `
@@ -23,7 +20,7 @@ function createIcon(tracking) {
   );
 }
 
-// ─── Build the tray context menu ─────────────────────────────────────────
+//Build the tray context menu 
 function buildMenu() {
   return Menu.buildFromTemplate([
     {
@@ -58,7 +55,7 @@ function buildMenu() {
     },
   ]);
 }
-// ─── Initialize the tray ─────────────────────────────────────────────────
+// Initialize the tray 
 function initTray() {
   tray = new Tray(createIcon(true));
   tray.setToolTip('Companion App — Tracking');

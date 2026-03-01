@@ -54,10 +54,10 @@ async function flush() {
 }
 
 
-// ─── Send every 30 seconds the data ────────────────────────────────────────────────
+//  Send every 30 seconds the data 
 const interval = setInterval(flush, 30_000);
 
-// ─── Flush immediately on app quit so no data is lost ────────────────────
+//  Flush immediately on app quit so no data is lost 
 process.on('exit', () => {
   clearInterval(interval);
   flush();

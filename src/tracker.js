@@ -1,16 +1,14 @@
-// tracker.js
-// Tracks active window, app focus time, and idle state.
-// Exposes eventBuffer which sender.js reads from.
+// Tracks active window,time
+
 
 const { app }   = require('electron');
 const { spawn } = require('child_process');
 const path      = require('path');
 
-// ─── Shared buffer — sender.js reads and drains this ─────────────────────
 const eventBuffer = [];
 const allEvents = []; 
 let watcherProcess = null;
-// ─── Start & stop ─────────────────────────────────────────────────────────
+//Start & stop 
 function start() {
   const scriptPath = path.join(__dirname, 'watcher.py');
   watcherProcess = spawn('python3', [scriptPath], {
@@ -82,6 +80,6 @@ function stop() {
   }
 }
 
-// ─── Hook into Electron app lifecycle ────────────────────────────────────
+//Hook into Electron app lifecycle 
 
 module.exports = { eventBuffer,allEvents, start, stop };

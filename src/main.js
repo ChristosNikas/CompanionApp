@@ -39,7 +39,7 @@ function createMainWindow() {
   });
 }
 
-// ─── Report window (report.html — session summary) ───────────────────────
+// Report window (report.html — session summary) 
 let reportWindow = null;
 
 function createReportWindow() {
@@ -56,15 +56,8 @@ function createReportWindow() {
     },
   });
 
-  reportWindow.loadFile(path.join(__dirname, 'report.html'));
-
-  reportWindow.on('closed', () => {
-    reportWindow = null;
-    app.quit(); // close the whole app when report is closed    !!!!!!!!!!!!!!!!!!!(after done remove this)
-  });
+  
 }
-
-// ─── IPC listeners — respond to signals from handler.js ──────────────────
 
 // User clicked START in index.html
 ipcMain.on('start-tracking', () => {
@@ -81,14 +74,6 @@ ipcMain.on('stop-tracking', () => {
 });
 
 
-/*
-ipcMain.handle('get-events', () => {
-  let sessionSnapshot = [...eventBuffer];
-  return sessionSnapshot;
-  
-});
-*/
-// report.html triggers a flush to the web app
 const fs = require('fs');
 
 ipcMain.handle('flush-events', async () => {
@@ -101,7 +86,7 @@ ipcMain.handle('flush-events', async () => {
   app.quit();
   return true;
 });
-// ─── App ready ───────────────────────────────────────────────────────────
+// App ready 
 app.whenReady().then(() => {
   console.log('[main] Companion App started.');
   createMainWindow();
@@ -109,7 +94,7 @@ app.whenReady().then(() => {
   console.log('[main] Ready.');
 });
 
-// ─── Clean shutdown ───────────────────────────────────────────────────────
+// Clean shutdown 
 app.on('before-quit', async () => {
   console.log('[main] Shutting down...');
   stop();

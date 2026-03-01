@@ -1,6 +1,4 @@
-// handler.js
-// Preload script — runs before the HTML page loads.
-// Creates a safe bridge (electronAPI) between the HTML buttons
+// Creates a  bridge (electronAPI) between the HTML buttons
 // and the Node.js backend (tracker.js and sender.js).
 //
 // WHY: Electron's security rules prevent HTML from calling Node.js directly.
