@@ -197,6 +197,7 @@
   },
   "homepage": "https://github.com/ChristosNikas/CompanionApp#readme",
   "devDependencies": {
-    "electron": "^40.6.1"
+    "electron": "^40.6.1",
+    "tailwindcss": "^4.2.1"
   }
 }

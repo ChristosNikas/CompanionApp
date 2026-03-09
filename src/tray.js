@@ -69,4 +69,4 @@ function initTray() {
   console.log('[tray] System tray initialized.');
 }
 
-module.exports = { initTray };
+module.exports = { initTray, getTray: () => tray };

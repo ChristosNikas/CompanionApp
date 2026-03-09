@@ -207,6 +207,7 @@
           statusTxt.textContent = 'Sending data...';
           window.electronAPI.flush().then(() => {
             statusTxt.textContent = 'Done!';
+            window.electronAPI.showReport();
           });
         }, 1500);
       }

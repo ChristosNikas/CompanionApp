@@ -1,92 +1,83 @@
-// main.js
-// Electron entry point.
-// Wires together tracker.js, sender.js, tray.js, handler.js, index.html and report.html
-
 require('dotenv').config();
-const { app, BrowserWindow, ipcMain, session } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { start, stop, eventBuffer,allEvents } = require('./tracker');
-const { flush }                     = require('./sender');
-const { initTray }                  = require('./tray');
+const { start, stop, allEvents } = require('./tracker');
+const { flush }                   = require('./sender');
+const { initTray }                = require('./tray');
 
-// ─── Keep app running when all windows are closed (lives in tray) ─────────
-app.on('window-all-closed', (e) => {
-  e.preventDefault();
-});
+app.on('window-all-closed', (e) => e.preventDefault());
 
-// ─── Main window (index.html — big start/stop button) ────────────────────
 let mainWindow = null;
+let reportWindow = null;
+let sessionSnapshot = [];
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 380,
-    height: 680,
+    width: 380, height: 680,
     resizable: false,
-    alwaysOnTop: true,        // floating window
-    skipTaskbar: true,        // don't show in taskbar
+    alwaysOnTop: true,
+    skipTaskbar: true,
     webPreferences: {
       preload: path.join(__dirname, 'handler.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
-
-
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  mainWindow.on('closed', () => { mainWindow = null; });
 }
-
-// Report window (report.html — session summary) 
-let reportWindow = null;
 
 function createReportWindow() {
   reportWindow = new BrowserWindow({
-    width: 420,
-    height: 560,
+    width: 800, height: 900,
     resizable: false,
-    frame: false,
-    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'handler.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
-
-  
+  reportWindow.loadFile(path.join(__dirname, 'report/report.html'));
+  reportWindow.on('closed', () => {
+    reportWindow = null;
+    app.quit();
+  });
 }
 
-// User clicked START in index.html
+// ── IPC ───────────────────────────────────────────────────────────────────
+
 ipcMain.on('start-tracking', () => {
   console.log('[main] Start tracking.');
   start();
 });
-let sessionSnapshot = [];
-// User clicked STOP in index.html
+
 ipcMain.on('stop-tracking', () => {
   console.log('[main] Stop tracking.');
   stop();
   sessionSnapshot = [...allEvents];
- 
 });
 
+ipcMain.on('show-report', () => {
+  console.log('[main] Opening report window.');
+  if (mainWindow) mainWindow.close();
+  if (!reportWindow) createReportWindow();
+  else reportWindow.focus();
+  // Hide tray
+  const { getTray } = require('./tray');
+  const t = getTray();
+  if (t) t.destroy();
+});
 
-const fs = require('fs');
+ipcMain.handle('get-events', () => sessionSnapshot);
 
 ipcMain.handle('flush-events', async () => {
-  // Save to file for testing
-  fs.writeFileSync(
-    path.join(__dirname, '../session.json'),
-    JSON.stringify(sessionSnapshot, null, 2)
-  );
   await flush();
-  app.quit();
   return true;
 });
-// App ready 
+
+ipcMain.on('quit-app', () => app.quit());
+
+// ── Start ─────────────────────────────────────────────────────────────────
 app.whenReady().then(() => {
   console.log('[main] Companion App started.');
   createMainWindow();
@@ -94,9 +85,7 @@ app.whenReady().then(() => {
   console.log('[main] Ready.');
 });
 
-// Clean shutdown 
 app.on('before-quit', async () => {
-  console.log('[main] Shutting down...');
   stop();
   await flush();
   console.log('[main] Done. Goodbye!');
