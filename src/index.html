@@ -3,29 +3,26 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Companion App</title>
+<title>Scholar Vision</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600;700&display=swap');
 
   :root {
-    --bg:        #ffffff;
-    --bg-2:      #f5f5f5;
-    --bg-3:      #ebebeb;
-    --fg:        #111111;
-    --fg-dim:    #444444;
-    --fg-muted:  #999999;
-    --border:    #11111133;
-    --border-hi: #11111166;
-    --font-main: 'EB Garamond', Georgia, serif;
-    --radius:    2px;
+    --bg:      #0c0c0e;
+    --surface: #131316;
+    --border:  #1e1e24;
+    --accent:  #a8ff78;
+    --red:     #ff6b6b;
+    --text:    #e8e8f0;
+    --muted:   #4a4a5a;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     background: var(--bg);
-    color: var(--fg);
-    font-family: var(--font-main);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -36,23 +33,26 @@
     -webkit-app-region: drag;
   }
 
-  /* ── Header ── */
+  /* ── Logo ── */
   .logo {
-    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--fg-muted);
+    color: var(--muted);
   }
+
+  .logo span { color: var(--accent); }
 
   /* ── Timer ── */
   .timer {
-    font-size: 2.2rem;
-    font-weight: 400;
+    font-family: 'DM Mono', monospace;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--text);
     letter-spacing: 0.05em;
-    color: var(--fg);
     opacity: 0;
     transition: opacity 0.3s;
-    font-variant-numeric: tabular-nums;
   }
   .timer.visible { opacity: 1; }
 
@@ -61,64 +61,86 @@
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    border: 1px solid var(--border-hi);
-    background: var(--bg-2);
+    border: 1px solid var(--border);
+    background: var(--surface);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
+    gap: 0.6rem;
+    transition: all 0.25s ease;
     -webkit-app-region: no-drag;
     outline: none;
-    font-family: var(--font-main);
+    position: relative;
   }
 
-  .track-btn:hover {
-    background: var(--fg);
-    color: var(--bg);
-    border-color: var(--fg);
+  .track-btn::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
   }
+
+  .track-btn.idle:hover::before { border-color: var(--border); inset: -12px; }
+  .track-btn.idle:hover { border-color: var(--accent); box-shadow: 0 0 40px rgba(168,255,120,0.1); }
 
   .track-btn.tracking {
-    background: var(--fg);
-    color: var(--bg);
-    border-color: var(--fg);
+    border-color: var(--red);
+    box-shadow: 0 0 40px rgba(255,107,107,0.15);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(255,107,107,0.15); }
+    50%       { box-shadow: 0 0 60px rgba(255,107,107,0.3); }
   }
 
   .btn-icon {
     font-size: 1.8rem;
-    line-height: 1;
+    color: var(--muted);
+    transition: color 0.2s, transform 0.2s;
   }
 
+  .track-btn.idle:hover .btn-icon { color: var(--accent); transform: scale(1.1); }
+  .track-btn.tracking .btn-icon   { color: var(--red); }
+
   .btn-label {
-    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.2s;
   }
+
+  .track-btn.idle:hover .btn-label { color: var(--accent); }
+  .track-btn.tracking .btn-label   { color: var(--red); }
 
   /* ── Status ── */
   .status {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
     text-transform: uppercase;
-    color: var(--fg-muted);
+    letter-spacing: 0.1em;
   }
 
   .status-dot {
-    width: 5px;
-    height: 5px;
+    width: 5px; height: 5px;
     border-radius: 50%;
-    background: var(--fg-muted);
+    background: var(--muted);
     transition: background 0.3s;
   }
 
   .status-dot.active {
-    background: var(--fg);
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
     animation: blink 1.5s infinite;
   }
 
@@ -131,13 +153,13 @@
   .divider {
     width: 40px;
     height: 1px;
-    background: var(--border-hi);
+    background: var(--border);
   }
 </style>
 </head>
 <body>
 
-<div class="logo">Scholar Vision</div>
+<div class="logo">Scholar<span>Vision</span></div>
 
 <div class="divider"></div>
 
@@ -204,7 +226,7 @@
       if (window.electronAPI) {
         window.electronAPI.stopTracking();
         setTimeout(() => {
-          statusTxt.textContent = 'Sending data...';
+          statusTxt.textContent = 'Processing...';
           window.electronAPI.flush().then(() => {
             statusTxt.textContent = 'Done!';
             window.electronAPI.showReport();
