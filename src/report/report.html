@@ -7,8 +7,6 @@
   <link rel="stylesheet" href="report.css"/>
 </head>
 <body>
-
-  <!-- HEADER -->
   <div class="header">
     <div class="header-left">
       <h1>Session <span>Report</span></h1>
@@ -19,65 +17,29 @@
       <div class="total-label">Total Session</div>
     </div>
   </div>
-
-  <!-- BODY -->
   <div class="body">
-
-    <!-- Productive vs Unproductive -->
     <div class="section">
-      <div class="section-title">Productive vs Unproductive</div>
-      <div class="split-bar-wrap">
-        <div class="split-bar-fill" id="split-bar" style="width:0%"></div>
-      </div>
-      <div class="split-row">
-        <div>
-          <div class="split-pct prod" id="prod-pct">—</div>
-          <div class="split-sub" id="prod-time">Productive</div>
-        </div>
-        <div style="text-align:right">
-          <div class="split-pct unprod" id="unprod-pct">—</div>
-          <div class="split-sub" id="unprod-time">Unproductive</div>
-        </div>
-      </div>
+      <div class="section-title">Category Breakdown</div>
+      <div id="category-bars"></div>
     </div>
-
-    <!-- Most Used App -->
     <div class="section">
       <div class="section-title">Most Used App</div>
       <div class="top-app-name" id="top-app-name">—</div>
       <div class="top-app-time" id="top-app-time">—</div>
       <div class="top-app-badge" id="top-app-badge">—</div>
     </div>
-
-    <!-- Focus Ratio -->
-    <div class="section" style="grid-column: 1 / -1;">
-        <div class="section-title">Focus Ratio</div>
-            <div style="display:flex; align-items:flex-end; gap:1rem;">
-            <div class="total-time" id="focus-ratio">—</div>
-        <div class="split-sub" style="margin-bottom:0.4rem;">of your session was productive</div>
-        </div>
-    </div>
-
-    <!-- Time Per App -->
     <div class="section apps-section">
       <div class="section-title">Time Per App</div>
       <div id="apps-list"><div class="empty">No data</div></div>
     </div>
-
-    <!-- Session Timeline -->
     <div class="section timeline-section">
       <div class="section-title">Session Timeline</div>
       <div id="timeline"><div class="empty">No data</div></div>
     </div>
-
   </div>
-
-  <!-- FOOTER -->
   <div class="footer">
     <button class="btn btn-secondary" onclick="closeReport()">Close</button>
-    <button class="btn btn-primary" id="send-btn" onclick="sendData()">Send to Web App</button>
   </div>
-
   <script src="report.js"></script>
 </body>
 </html>

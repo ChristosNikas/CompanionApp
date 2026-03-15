@@ -1,14 +1,16 @@
 require('dotenv').config();
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { start, stop, allEvents } = require('./tracker');
-const { flush }                   = require('./sender');
-const { initTray }                = require('./tray');
+const { start, stop, allEvents }         = require('./tracker');
+const { flush }                          = require('./sender');
+const { initTray }                       = require('./tray');
+const { loadCategories, saveCategories } = require('./categories');
 
 app.on('window-all-closed', (e) => e.preventDefault());
 
-let mainWindow = null;
-let reportWindow = null;
+let mainWindow     = null;
+let reportWindow   = null;
+let settingsWindow = null;
 let sessionSnapshot = [];
 
 function createMainWindow() {
@@ -37,14 +39,26 @@ function createReportWindow() {
       nodeIntegration: false,
     },
   });
-  reportWindow.loadFile(path.join(__dirname, 'report/report.html'));
+  reportWindow.loadFile(path.join(__dirname, 'report', 'report.html'));
   reportWindow.on('closed', () => {
     reportWindow = null;
     app.quit();
   });
 }
 
-// ── IPC ───────────────────────────────────────────────────────────────────
+function createSettingsWindow() {
+  settingsWindow = new BrowserWindow({
+    width: 700, height: 600,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'handler.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  settingsWindow.loadFile(path.join(__dirname, 'settings', 'settings.html'));
+  settingsWindow.on('closed', () => { settingsWindow = null; });
+}
 
 ipcMain.on('start-tracking', () => {
   console.log('[main] Start tracking.');
@@ -62,22 +76,23 @@ ipcMain.on('show-report', () => {
   if (mainWindow) mainWindow.close();
   if (!reportWindow) createReportWindow();
   else reportWindow.focus();
-  // Hide tray
   const { getTray } = require('./tray');
   const t = getTray();
   if (t) t.destroy();
 });
 
-ipcMain.handle('get-events', () => sessionSnapshot);
-
-ipcMain.handle('flush-events', async () => {
-  await flush();
-  return true;
+ipcMain.on('show-settings', () => {
+  console.log('[main] Opening settings window.');
+  if (!settingsWindow) createSettingsWindow();
+  else settingsWindow.focus();
 });
 
-ipcMain.on('quit-app', () => app.quit());
+ipcMain.handle('get-events',      ()        => sessionSnapshot);
+ipcMain.handle('flush-events',    async ()  => { await flush(); return true; });
+ipcMain.handle('get-categories',  ()        => loadCategories());
+ipcMain.handle('save-categories', (_, cats) => saveCategories(cats));
+ipcMain.on('quit-app',            ()        => app.quit());
 
-// ── Start ─────────────────────────────────────────────────────────────────
 app.whenReady().then(() => {
   console.log('[main] Companion App started.');
   createMainWindow();
