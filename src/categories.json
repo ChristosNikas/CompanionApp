@@ -45,15 +45,15 @@
       "apps": [
         "rhythmbox",
         "vlc",
-        "mpv",
-        "spotify"
+        "mpv"
       ]
     },
     {
       "name": "Other",
       "color": "#4a4a5a",
       "apps": [
-        "calculator"
+        "calculator",
+        "spotify"
       ]
     }
   ]

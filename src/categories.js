@@ -28,14 +28,20 @@ function getCategory(appName, windowTitle = '') {
   const lowerApp   = appName.toLowerCase();
   const lowerTitle = windowTitle.toLowerCase();
 
+  // Window title first — more specific
   for (const cat of categories) {
-    if (cat.apps.some(a => {
-      const la = a.toLowerCase();
-      return lowerApp.includes(la) || lowerTitle.includes(la);
-    })) {
+    if (cat.apps.some(a => lowerTitle.includes(a.toLowerCase()))) {
       return { name: cat.name, color: cat.color };
     }
   }
+
+  // App name second
+  for (const cat of categories) {
+    if (cat.apps.some(a => lowerApp.includes(a.toLowerCase()))) {
+      return { name: cat.name, color: cat.color };
+    }
+  }
+
   return { name: 'Other', color: '#4a4a5a' };
 }
 
