@@ -1,9 +1,9 @@
-# companion-app-for-ScholarVision
+# Focusly
 
 
 Working Instructions:
 
-# Companion App
+#Focusly
 
 A Linux desktop app that tracks your app usage and sends the data to your web app.
 
@@ -22,26 +22,12 @@ A Linux desktop app that tracks your app usage and sends the data to your web ap
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/ChristosNikas/CompanionApp.git
-cd CompanionApp
+git clone https://github.com/ChristosNikas/Focusly.git
+cd Focusly
 
 # 2. Install dependencies
 npm install
 sudo apt install python3-pyatspi
-
-# 3. Create your .env file
-touch .env
-```
-
-Add this to your `.env`:
-```
-API_URL=https://your-webapp.com/api/events
-USER_TOKEN=your_secret_token(exaple:test123)
-USER_ID=your_user_id(example:testuser)
-DEVICE_ID=your-device-name(example:testdevice)
-```
-
----
 
 ## Run
 
