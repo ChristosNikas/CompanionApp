@@ -23,3 +23,7 @@ __pycache__/
 
 #env files
 *.env
+
+#.deb
+*.deb
+.stack-work/
