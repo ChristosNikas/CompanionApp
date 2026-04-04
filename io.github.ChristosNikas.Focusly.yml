@@ -1,0 +1,35 @@
+id: io.github.ChristosNikas.Focusly
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '23.08'
+command: focusly-wrapper
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+  - --talk-name=org.freedesktop.Notifications
+
+modules:
+  - name: focusly
+    buildsystem: simple
+    build-commands:
+      # 1. Install dependencies from the offline cache generated-sources.json
+      - npm install --offline
+      # 2. Package the app using Electron Forge
+      - ./node_modules/.bin/electron-forge package --platform=linux --arch=x64
+      # 3. Move the packaged app to the /app directory
+      - cp -r out/Focusly-linux-x64 /app/main
+      # 4. Create a launch script
+      - |
+        echo '#!/bin/sh
+        exec /app/main/Focusly "$@"' > /app/bin/focusly-wrapper
+      - chmod +x /app/bin/focusly-wrapper
+    sources:
+      - type: dir
+        path: .
+      - generated-sources.json
